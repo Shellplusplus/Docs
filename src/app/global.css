@@ -56,6 +56,7 @@
 }
 
 html {
+  scroll-behavior: smooth;
   scrollbar-gutter: stable;
 }
 
@@ -103,30 +104,30 @@ html > body[data-scroll-locked] {
   max-width: none;
 }
 
-html[data-docs-transition="true"] #nd-page {
-  view-transition-name: docs-content;
+html[data-site-transition="true"] :is(#nd-page, [data-motion-scope]) {
+  view-transition-name: site-content;
 }
 
-html[data-docs-transition="true"]
+html[data-site-transition-kind="docs"]
   #nd-sidebar:not([data-collapsed="true"])
   a[data-active="true"] {
   view-transition-name: docs-active-item;
 }
 
-html[data-docs-view-transitions="true"] .docs-page-transition {
+html[data-site-view-transitions="true"] .docs-page-transition {
   animation: none;
 }
 
-::view-transition-group(docs-content) {
+::view-transition-group(site-content) {
   overflow: clip;
 }
 
-::view-transition-old(docs-content) {
-  animation: docs-content-out 140ms ease-in both;
+::view-transition-old(site-content) {
+  animation: site-content-out 180ms cubic-bezier(0.4, 0, 1, 1) both;
 }
 
-::view-transition-new(docs-content) {
-  animation: docs-content-in 280ms var(--motion-ease-standard) 60ms both;
+::view-transition-new(site-content) {
+  animation: site-content-in 420ms var(--motion-ease-standard) 35ms both;
 }
 
 ::view-transition-group(docs-active-item) {
@@ -140,25 +141,57 @@ html[data-docs-view-transitions="true"] .docs-page-transition {
   mix-blend-mode: normal;
 }
 
-@keyframes docs-content-out {
+@keyframes site-content-out {
   to {
     opacity: 0;
-    filter: blur(8px);
-    transform: translateY(-6px) scale(0.997);
+    filter: blur(4px);
+    transform: translate3d(0, -10px, 0) scale(0.995);
   }
 }
 
-@keyframes docs-content-in {
+@keyframes site-content-in {
   from {
     opacity: 0;
-    filter: blur(10px);
-    transform: translateY(8px) scale(0.997);
+    filter: blur(6px);
+    transform: translate3d(0, 14px, 0) scale(0.995);
   }
 
   to {
     opacity: 1;
     filter: blur(0);
     transform: translateY(0) scale(1);
+  }
+}
+
+html[data-site-transition-direction="backward"]
+  ::view-transition-old(site-content) {
+  animation-name: site-content-out-backward;
+}
+
+html[data-site-transition-direction="backward"]
+  ::view-transition-new(site-content) {
+  animation-name: site-content-in-backward;
+}
+
+@keyframes site-content-out-backward {
+  to {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translate3d(0, 10px, 0) scale(0.995);
+  }
+}
+
+@keyframes site-content-in-backward {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translate3d(0, -14px, 0) scale(0.995);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
@@ -294,6 +327,61 @@ html[data-docs-view-transitions="true"] .docs-page-transition {
   transform-origin: top center;
   animation: docs-page-reveal var(--motion-duration-base)
     var(--motion-ease-standard) both;
+}
+
+#nd-docs-layout [class*="transition-[height,opacity]"] {
+  transform-origin: top center;
+  transition-duration: var(--motion-duration-base);
+  transition-timing-function: var(--motion-ease-standard);
+  will-change: height, opacity, transform;
+}
+
+#nd-docs-layout [class*="transition-[height,opacity]"][data-starting-style],
+#nd-docs-layout [class*="transition-[height,opacity]"][data-ending-style] {
+  transform: translateY(-4px) scaleY(0.985);
+}
+
+#nd-docs-layout [data-toc-popover] > header,
+#nd-docs-layout [data-toc-popover-trigger] svg {
+  transition:
+    border-color var(--motion-duration-fast) ease,
+    background-color var(--motion-duration-fast) ease,
+    box-shadow var(--motion-duration-base) var(--motion-ease-standard),
+    transform var(--motion-duration-base) var(--motion-ease-standard);
+}
+
+#nd-docs-layout [data-toc-popover-trigger][aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+#nd-toc a,
+#nd-docs-layout [data-toc-popover-content] a {
+  transform: translateX(0);
+  transition:
+    color var(--motion-duration-fast) ease,
+    opacity var(--motion-duration-fast) ease,
+    transform var(--motion-duration-base) var(--motion-ease-standard);
+}
+
+#nd-toc a[data-active="true"],
+#nd-docs-layout [data-toc-popover-content] a[data-active="true"] {
+  transform: translateX(3px);
+}
+
+#nd-toc svg[class*="transition-[clip-path]"],
+#nd-toc [class*="transition-[opacity,offset-distance]"],
+#nd-docs-layout
+  [data-toc-popover-content]
+  svg[class*="transition-[clip-path]"],
+#nd-docs-layout
+  [data-toc-popover-content]
+  [class*="transition-[opacity,offset-distance]"] {
+  transition-duration: 420ms;
+  transition-timing-function: var(--motion-ease-standard);
+}
+
+#nd-page :where(h1, h2, h3, h4, h5, h6)[id] {
+  scroll-margin-top: 92px;
 }
 
 @keyframes docs-page-reveal {
@@ -1117,6 +1205,26 @@ html[data-docs-view-transitions="true"] .docs-page-transition {
       transform var(--docs-duration-press) ease;
   }
 
+  #nd-sidebar:not([data-collapsed="true"])
+    :where(a, button)[data-motion-pending="true"] {
+    color: var(--color-fd-primary);
+    background: var(--color-fd-accent);
+    transform: translateX(2px);
+  }
+
+  #nd-sidebar:not([data-collapsed="true"])
+    :where(a, button)[data-motion-pending="true"]::after {
+    width: 5px;
+    height: 5px;
+    margin-inline-start: auto;
+    border-radius: 999px;
+    background: currentColor;
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--color-fd-primary) 36%, transparent);
+    content: "";
+    animation: docs-pending-pulse 800ms ease-out infinite;
+  }
+
   #nd-sidebar:not([data-collapsed="true"]) a[data-active="true"] {
     color: var(--color-fd-primary);
     background: var(--color-fd-accent);
@@ -1148,6 +1256,14 @@ html[data-docs-view-transitions="true"] .docs-page-transition {
     box-shadow: var(--docs-shadow-island);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
+  }
+}
+
+@keyframes docs-pending-pulse {
+  70%,
+  100% {
+    box-shadow: 0 0 0 7px transparent;
+    opacity: 0.45;
   }
 }
 
@@ -1272,6 +1388,10 @@ html[data-docs-view-transitions="true"] .docs-page-transition {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   .docs-reading-progress {
     display: none;
   }
@@ -1315,8 +1435,8 @@ html[data-docs-view-transitions="true"] .docs-page-transition {
     display: none;
   }
 
-  ::view-transition-old(docs-content),
-  ::view-transition-new(docs-content),
+  ::view-transition-old(site-content),
+  ::view-transition-new(site-content),
   ::view-transition-group(docs-active-item) {
     animation-duration: 0.01ms;
   }

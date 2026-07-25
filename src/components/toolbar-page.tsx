@@ -43,7 +43,7 @@ function ToolbarButton({
   );
 }
 
-export function InvertImage({
+export function ToolbarPage({
   children,
   className,
   ...props

@@ -10,19 +10,43 @@ type PendingRoute = {
   timeout: ReturnType<typeof setTimeout>;
 };
 
-export function DocsMotionCoordinator() {
+function isDocsPath(pathname: string) {
+  const docsBase = withBasePath(docsRoute);
+  return pathname === docsBase || pathname.startsWith(`${docsBase}/`);
+}
+
+function getTransitionDirection(anchor: HTMLAnchorElement) {
+  const sidebar = anchor.closest("#nd-sidebar, #nd-sidebar-mobile");
+  if (!sidebar) return "forward";
+
+  const links = Array.from(
+    sidebar.querySelectorAll<HTMLAnchorElement>("a[href]"),
+  ).filter((link) => link.origin === window.location.origin);
+  const currentIndex = links.findIndex(
+    (link) => link.dataset.active === "true",
+  );
+  const nextIndex = links.indexOf(anchor);
+
+  if (currentIndex >= 0 && nextIndex >= 0 && nextIndex < currentIndex) {
+    return "backward";
+  }
+  return "forward";
+}
+
+export function SiteMotionCoordinator() {
   const pathname = usePathname();
   const router = useRouter();
   const pendingRoute = useRef<PendingRoute | null>(null);
   const activeTransition = useRef<ViewTransition | null>(null);
+  const pendingAnchor = useRef<HTMLAnchorElement | null>(null);
 
   useEffect(() => {
     if (typeof document.startViewTransition === "function") {
-      document.documentElement.dataset.docsViewTransitions = "true";
+      document.documentElement.dataset.siteViewTransitions = "true";
     }
 
     return () => {
-      delete document.documentElement.dataset.docsViewTransitions;
+      delete document.documentElement.dataset.siteViewTransitions;
     };
   }, []);
 
@@ -36,7 +60,16 @@ export function DocsMotionCoordinator() {
 
   useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const docsBase = withBasePath(docsRoute);
+
+    const cleanup = () => {
+      if (pendingAnchor.current) {
+        delete pendingAnchor.current.dataset.motionPending;
+        pendingAnchor.current = null;
+      }
+      delete document.documentElement.dataset.siteTransition;
+      delete document.documentElement.dataset.siteTransitionKind;
+      delete document.documentElement.dataset.siteTransitionDirection;
+    };
 
     const handleClick = (event: MouseEvent) => {
       if (
@@ -64,13 +97,10 @@ export function DocsMotionCoordinator() {
       }
 
       const destination = new URL(anchor.href);
-      const isDocsPage =
-        destination.pathname === docsBase ||
-        destination.pathname.startsWith(`${docsBase}/`);
       const isSameDocument =
         destination.pathname === window.location.pathname &&
         destination.search === window.location.search;
-      if (!isDocsPage || isSameDocument) return;
+      if (isSameDocument) return;
 
       event.preventDefault();
       const routePath =
@@ -82,11 +112,23 @@ export function DocsMotionCoordinator() {
       if (activeTransition.current) {
         activeTransition.current.skipTransition();
         activeTransition.current = null;
+        cleanup();
         router.push(routeHref);
         return;
       }
 
-      document.documentElement.dataset.docsTransition = "true";
+      const docsTransition =
+        isDocsPath(window.location.pathname) &&
+        isDocsPath(destination.pathname);
+      document.documentElement.dataset.siteTransition = "true";
+      document.documentElement.dataset.siteTransitionKind = docsTransition
+        ? "docs"
+        : "page";
+      document.documentElement.dataset.siteTransitionDirection =
+        getTransitionDirection(anchor);
+      anchor.dataset.motionPending = "true";
+      pendingAnchor.current = anchor;
+
       const transition = document.startViewTransition(async () => {
         const routeReady = new Promise<void>((resolve) => {
           let settled = false;
@@ -100,11 +142,7 @@ export function DocsMotionCoordinator() {
             resolve();
           };
           const timeout = setTimeout(complete, 1600);
-          pendingRoute.current = {
-            from: pathname,
-            resolve: complete,
-            timeout,
-          };
+          pendingRoute.current = { from: pathname, resolve: complete, timeout };
         });
 
         router.push(routeHref);
@@ -116,7 +154,7 @@ export function DocsMotionCoordinator() {
         .catch(() => undefined)
         .finally(() => {
           activeTransition.current = null;
-          delete document.documentElement.dataset.docsTransition;
+          cleanup();
         });
     };
 
@@ -132,8 +170,13 @@ export function DocsMotionCoordinator() {
         pending.resolve();
       }
       activeTransition.current?.skipTransition();
-      delete document.documentElement.dataset.docsTransition;
-      delete document.documentElement.dataset.docsViewTransitions;
+      if (pendingAnchor.current) {
+        delete pendingAnchor.current.dataset.motionPending;
+      }
+      delete document.documentElement.dataset.siteTransition;
+      delete document.documentElement.dataset.siteTransitionKind;
+      delete document.documentElement.dataset.siteTransitionDirection;
+      delete document.documentElement.dataset.siteViewTransitions;
     },
     [],
   );
