@@ -48,11 +48,11 @@
 .dark {
   --color-landing-foreground: #e4e2d0;
   --color-landing-foreground-200: #b7af7e;
-  --color-brand: #fff383;
-  --color-brand-secondary: #fc7744;
-  --color-brand-secondary-foreground: #521700;
-  --color-brand-foreground: black;
-  --color-brand-200: #fff7c8;
+  --color-brand: #4da1ff;
+  --color-brand-secondary: #1f6feb;
+  --color-brand-secondary-foreground: #ffffff;
+  --color-brand-foreground: #06172e;
+  --color-brand-200: #78b7ff;
 }
 
 html {
@@ -370,9 +370,7 @@ html[data-site-transition-direction="backward"]
 
 #nd-toc svg[class*="transition-[clip-path]"],
 #nd-toc [class*="transition-[opacity,offset-distance]"],
-#nd-docs-layout
-  [data-toc-popover-content]
-  svg[class*="transition-[clip-path]"],
+#nd-docs-layout [data-toc-popover-content] svg[class*="transition-[clip-path]"],
 #nd-docs-layout
   [data-toc-popover-content]
   [class*="transition-[opacity,offset-distance]"] {
@@ -398,19 +396,11 @@ html[data-site-transition-direction="backward"]
   }
 }
 
-[data-motion-scope] {
-  --motion-hero-x: 0px;
-  --motion-hero-y: 0px;
-}
-
 .home-hero-ambient {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  transform: translate3d(var(--motion-hero-x), var(--motion-hero-y), 0)
-    scale(1.025);
-  transition: transform 180ms var(--motion-ease-standard);
-  will-change: transform;
+  transform: scale(1.025);
 }
 
 [data-motion-hero-item] {

@@ -14,11 +14,9 @@ export function SiteRootProvider({ children }: { children: ReactNode }) {
   const isDocsRoute =
     relativePathname === docsRoute ||
     relativePathname.startsWith(`${docsRoute}/`);
-  const routeGroup = isDocsRoute ? "docs" : "site";
 
   return (
     <RootProvider
-      key={routeGroup}
       search={{
         options: {
           type: "static",

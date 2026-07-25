@@ -64,7 +64,6 @@ export function MotionScope({ children, ...props }: ComponentProps<"main">) {
 
     const card = target.closest<MotionTarget>(".motion-card");
     const magnetic = target.closest<MotionTarget>(".motion-cta");
-    const hero = target.closest<MotionTarget>("[data-motion-hero]");
     const { clientX, clientY } = event;
 
     if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
@@ -87,14 +86,6 @@ export function MotionScope({ children, ...props }: ComponentProps<"main">) {
         magnetic.style.setProperty("--motion-magnet-y", `${y}px`);
       }
 
-      if (hero) {
-        const rect = hero.getBoundingClientRect();
-        const x = ((clientX - rect.left) / rect.width - 0.5) * 24;
-        const y = ((clientY - rect.top) / rect.height - 0.5) * 24;
-        hero.style.setProperty("--motion-hero-x", `${x}px`);
-        hero.style.setProperty("--motion-hero-y", `${y}px`);
-      }
-
       frameRef.current = null;
     });
   };
@@ -111,12 +102,6 @@ export function MotionScope({ children, ...props }: ComponentProps<"main">) {
     const magnetic = target.closest<MotionTarget>(".motion-cta");
     if (magnetic && (!related || !magnetic.contains(related))) {
       resetMagnetic(magnetic);
-    }
-
-    const hero = target.closest<MotionTarget>("[data-motion-hero]");
-    if (hero && (!related || !hero.contains(related))) {
-      hero.style.setProperty("--motion-hero-x", "0px");
-      hero.style.setProperty("--motion-hero-y", "0px");
     }
   };
 

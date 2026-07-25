@@ -57,7 +57,7 @@ export function Hero() {
           className="absolute inset-0 animate-fd-fade-in duration-800"
           colors={
             resolvedTheme === "dark"
-              ? ["#39BE1C", "#9c2f05", "#7A2A0000"]
+              ? ["#4da1ff", "#1f6feb", "#071b3d00"]
               : ["#fcfc51", "#ffa057", "#7A2A0020"]
           }
           colorBack="#00000000"
@@ -304,6 +304,7 @@ export function Writing({
 }
 
 export function AgnosticBackground() {
+  const { resolvedTheme } = useTheme();
   const ref = useRef<HTMLDivElement>(null);
   const visible = useIsVisible(ref);
 
@@ -314,7 +315,7 @@ export function AgnosticBackground() {
     >
       <Dithering
         colorBack="#00000000"
-        colorFront="#c6bb58"
+        colorFront={resolvedTheme === "dark" ? "#4da1ff" : "#c6bb58"}
         shape="warp"
         type="4x4"
         speed={visible ? 0.4 : 0}
