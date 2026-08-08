@@ -1,0 +1,24 @@
+# Shell++ 文档
+
+
+- **欢迎**
+- [Shell++ 文档](/docs): 面向 Xiaomi Vela 设备的开放工具链
+- [选择合适的接收端](/docs/choose-android-or-astrobox): 根据平台和使用方式选择 Shell++ 接收端
+- [支持的设备与平台](/docs/supported-devices-and-platforms): 判断手环、Android 与 AstroBoxV2 环境是否满足要求
+- [Shell++ 的故事](/docs/shellpp): 从一次截图与终端需求，到一套完整的 Vela 设备工具链
+
+- **基础**
+- [安装手环端与 Lua 资源](/docs/install-watch-and-lua): 准备 Shell++ Quick App 和配套设备执行资源
+- [连接 Android 配套应用](/docs/connect-android): 通过 Xiaomi Wearable 消息通道连接手环端
+- [连接 AstroBoxV2 插件](/docs/connect-astrobox): 在 AstroBoxV2 中加载插件、选择设备并完成握手
+- [截图与同步](/docs/screenshots-and-sync): 在手环端生成截图，并同步到 Android 或 AstroBoxV2
+- [常见连接问题](/docs/common-connection-issues): 排查设备发现、握手、截图同步和终端无响应
+
+- **拓展**
+- [远程终端](/docs/remote-terminal): 从 Android 或 AstroBoxV2 向手环发送命令
+- [应用管理](/docs/ymanage): 查看和管理手环上的 Shell++ 应用资源
+- [文件管理](/docs/wmanage): 在设备与接收端之间查看和传输文件
+- [设备性能测试](/docs/race): 测试设备性能并记录结果
+- [悬浮显示](/docs/see): 使用悬浮界面快速查看 Shell++ 状态
+- [架构说明](/docs/architecture): Quick App、Lua 后端与多端接收器如何协作
+- [AI 授权获取](/docs/AI): 为需要 AI 能力的功能准备授权信息
