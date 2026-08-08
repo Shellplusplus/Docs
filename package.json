@@ -1,6 +1,7 @@
 {
   "name": "shellplusplus-docs",
   "version": "0.0.6",
+  "license": "AGPL-3.0-only",
   "private": true,
   "scripts": {
     "build": "next build",
